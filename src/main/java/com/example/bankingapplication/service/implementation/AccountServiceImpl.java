@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountDTO getAccount(String name) {
         Account account = repository.findAccountByHolderName(name);
         if(account == null || account.getHolderName() == null){
-            throw new AccountHolderNotFound(name);
+            throw new AccountHolderNotFound("Account holder "+name+" Not found");
         }
         Account getTheAccount = repository.findAccountByHolderName(name);
         return mapper.map(getTheAccount, AccountDTO.class);
@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO deposit(Long id, double balance) {
-        Account account = repository.findById(id).orElseThrow(() -> new AccountHolderNotFound("Account holder not found"));
+        Account account = repository.findById(id).orElseThrow(() -> new AccountHolderNotFound("Account holder not found with id: "+id));
         double value = account.getBalance() + balance;
         account.setBalance(value);
         Account save = repository.save(account);
@@ -52,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO withdraw(Long id, double balance) {
-        Account account = repository.findById(id).orElseThrow(() -> new AccountHolderNotFound("Account holder not found"));
+        Account account = repository.findById(id).orElseThrow(() -> new AccountHolderNotFound("Account holder not found with given id: "+id));
         double value = account.getBalance() - balance;
         if(value < 0){
             throw new RuntimeException("Insufficient balance");
@@ -64,14 +64,21 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountDTO> getAllAccounts() {
-        List<Account> getAllAccount = repository.findAll();
-        return getAllAccount.stream().map((account) -> mapper.map(account, AccountDTO.class)).collect(Collectors.toList());
+        try {
+            List<Account> getAllAccount = repository.findAll();
+            return getAllAccount.stream()
+                    .map(account -> mapper.map(account, AccountDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            throw new AccountHolderNotFound("Not account found");
+        }
+
     }
 
     @Override
     public void delete(Long id) {
         Account isPresent = repository.findById(id).orElseThrow(
-                () -> new RuntimeException("Account not available")
+                () -> new AccountHolderNotFound("Holder not found with a given id: "+id)
         );
         repository.deleteById(id);
     }

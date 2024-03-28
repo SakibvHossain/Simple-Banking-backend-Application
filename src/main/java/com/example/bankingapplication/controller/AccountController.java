@@ -2,6 +2,7 @@ package com.example.bankingapplication.controller;
 
 import com.example.bankingapplication.dto.AccountDTO;
 import com.example.bankingapplication.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class AccountController {
     private AccountService service;
 
     @PostMapping("createAccount")
-    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO dto){
+    public ResponseEntity<AccountDTO> createAccount(@Valid @RequestBody AccountDTO dto){
         return new ResponseEntity<>(service.addAccount(dto), HttpStatus.CREATED);
     }
     @GetMapping("holderName/{name}")
@@ -26,7 +27,7 @@ public class AccountController {
         return new ResponseEntity<>(service.getAccount(name),HttpStatus.ACCEPTED);
     }
     @PutMapping("{id}/deposit")
-    public ResponseEntity<AccountDTO> deposit(@PathVariable Long id, @RequestBody Map<String, Double> request){
+    public ResponseEntity<AccountDTO> deposit(@PathVariable Long id,@Valid @RequestBody Map<String, Double> request){
         Double value = request.get("balance");
         return new ResponseEntity<>(service.deposit(id,value), HttpStatus.ACCEPTED);
     }
