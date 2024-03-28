@@ -55,4 +55,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
     }
 
+    //If none of the class handling exception this one to the rescue
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDetails> accountHolderExistException(Exception exception, WebRequest request){
+
+        //The model responsible for holding customized value
+        ExceptionDetails details = new ExceptionDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                request.getDescription(false),
+                "Bad Request"
+        );
+
+        return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
+    }
+
 }
