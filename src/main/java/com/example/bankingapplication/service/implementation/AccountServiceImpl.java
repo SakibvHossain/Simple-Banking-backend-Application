@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO getAccount(String name) {
         Account account = repository.findAccountByHolderName(name);
-        if(account.getHolderName() == null){
+        if(account == null || account.getHolderName() == null){
             throw new AccountHolderNotFound(name);
         }
         Account getTheAccount = repository.findAccountByHolderName(name);
