@@ -3,14 +3,22 @@ package com.example.bankingapplication.exception.global_exception;
 import com.example.bankingapplication.exception.AccountHolderNotFound;
 import com.example.bankingapplication.exception.HolderAlreadyExist;
 import com.example.bankingapplication.exception.model.ExceptionDetails;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -18,6 +26,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntityExceptionHandler: simplifies the process of handling exceptions
     in a Spring MVC application by providing a centralized mechanism for defining
     exception handling logic and generating customized responses.
+
+    Simple words: We used ResponseEntityExceptionHandler on this project for handling
+    validation
      */
 
     /*
@@ -68,6 +79,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
+    }
+
+    // Handling customized validation error
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+
+        Map<String, String> errors = new HashMap<>();
+        List<ObjectError> errorList = ex.getBindingResult().getAllErrors();
+
+        errorList.forEach(
+                (error) -> {
+                    String filename = ((FieldError) error).getField();
+                    String message = error.getDefaultMessage();
+                    errors.put(filename,message);
+                }
+        );
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
 }
