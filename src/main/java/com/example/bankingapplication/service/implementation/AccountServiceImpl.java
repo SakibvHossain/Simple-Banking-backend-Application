@@ -2,9 +2,11 @@ package com.example.bankingapplication.service.implementation;
 
 import com.example.bankingapplication.dto.AccountDTO;
 import com.example.bankingapplication.entity.Account;
+import com.example.bankingapplication.entity.User;
 import com.example.bankingapplication.exception.AccountHolderNotFound;
 import com.example.bankingapplication.exception.HolderAlreadyExist;
 import com.example.bankingapplication.repository.AccountRepository;
+import com.example.bankingapplication.repository.UserRepository;
 import com.example.bankingapplication.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private AccountRepository repository;
+    private UserRepository userRepository;
     private ModelMapper mapper;
     @Override
     public AccountDTO addAccount(AccountDTO dto) {
@@ -24,10 +27,17 @@ public class AccountServiceImpl implements AccountService {
         if(getInfo != null){
             throw new HolderAlreadyExist("Account holder already exist with name"+dto.getHolderName());
         }
-
         Account storeDtoToAccount = mapper.map(dto, Account.class);
         Account saveData = repository.save(storeDtoToAccount);
-//        AccountDTO storeAccountToDTO = mapper.map(saveData, AccountDTO.class);
+
+        //Getting the user by accountHolderName
+        User getUser = userRepository.findUserByUsername(saveData.getHolderName());
+        //set account whatever the user have
+        getUser.setAccount(saveData);
+        //save it
+        userRepository.save(getUser);
+
+//      AccountDTO storeAccountToDTO = mapper.map(saveData, AccountDTO.class);
         return mapper.map(saveData, AccountDTO.class);
     }
 

@@ -6,18 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account implements Serializable {
+public class Address implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String holderName;
-    private double balance;
-
-    @OneToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+    private String street;
+    private String house;
+    private Integer zipcode;
 }

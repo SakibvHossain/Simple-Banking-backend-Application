@@ -29,6 +29,7 @@ public class AccountController {
 
     @PostMapping("createAccount")
     public ResponseEntity<AccountDTO> createAccount(@RequestBody @Valid AccountDTO dto){
+        log.info("Account creating!!!");
         return new ResponseEntity<>(service.addAccount(dto), HttpStatus.CREATED);
     }
     @GetMapping("holderName/{name}")
@@ -45,9 +46,10 @@ public class AccountController {
         return service.deposit(id, value);
     }
     @PutMapping("{id}/withdraw")
-    public ResponseEntity<AccountDTO> withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request){
+    @CachePut(cacheNames = "accountdto", key = "#id")
+    public AccountDTO withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request){
         Double value = request.get("withdraw_balance");
-        return new ResponseEntity<>(service.withdraw(id,value), HttpStatus.ACCEPTED);
+        return service.withdraw(id,value);
     }
     @GetMapping("allAccounts")
     public ResponseEntity<List<AccountDTO>> getAllAccount(){
