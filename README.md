@@ -8,4 +8,4 @@
 3. Thymeleaf  
   
   
-**Skill used to build:** Java, Spring boot, Spring security, Hibernate, Hibernate Validator, MySQL, Exception Handling, SOC, DTO, Docker compose, thymeleaf.
+**Skill used to build:** Java, Spring boot, Spring security, Hibernate, Hibernate Validator, MySQL, Exception Handling, SOC, DTO, Docker compose, thymeleaf, redis.
