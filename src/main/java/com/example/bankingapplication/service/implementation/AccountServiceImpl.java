@@ -32,22 +32,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDTO getAccount(String name) {
+    public Account getAccount(String name) {
         Account account = repository.findAccountByHolderName(name);
         if(account == null || account.getHolderName() == null){
             throw new AccountHolderNotFound("Account holder "+name+" Not found");
         }
-        Account getTheAccount = repository.findAccountByHolderName(name);
-        return mapper.map(getTheAccount, AccountDTO.class);
+        //Account getTheAccount = repository.findAccountByHolderName(name);
+        //mapper.map(getTheAccount, AccountDTO.class);
+        return repository.findAccountByHolderName(name);
     }
 
     @Override
-    public AccountDTO deposit(Long id, double balance) {
+    public Account deposit(Long id, double balance) {
         Account account = repository.findById(id).orElseThrow(() -> new AccountHolderNotFound("Account holder not found with id: "+id));
         double value = account.getBalance() + balance;
         account.setBalance(value);
-        Account save = repository.save(account);
-        return mapper.map(save, AccountDTO.class);
+
+        return repository.save(account);
     }
 
     @Override

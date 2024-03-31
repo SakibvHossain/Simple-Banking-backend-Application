@@ -1,9 +1,12 @@
 package com.example.bankingapplication.controller;
 
 import com.example.bankingapplication.dto.AccountDTO;
+import com.example.bankingapplication.entity.Account;
 import com.example.bankingapplication.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -22,6 +25,7 @@ import java.util.Map;
 @CacheConfig(cacheNames = "account")
 public class AccountController {
     private AccountService service;
+    public static final Logger log = LoggerFactory.getLogger(AccountController.class);
 
     @PostMapping("createAccount")
     public ResponseEntity<AccountDTO> createAccount(@RequestBody @Valid AccountDTO dto){
@@ -29,14 +33,16 @@ public class AccountController {
     }
     @GetMapping("holderName/{name}")
     @Cacheable(value = "account", key = "#name")
-    public ResponseEntity<AccountDTO> getAccountByName(@PathVariable String name){
-        return new ResponseEntity<>(service.getAccount(name),HttpStatus.ACCEPTED);
+    public Account getAccountByName(@PathVariable String name){
+        return service.getAccount(name);
     }
+
+    //ResponseEntity along with DTO doesn't work while working with redis as a caching mechanism
     @PutMapping("{id}/deposit")
     @CachePut(cacheNames = "account", key = "#id")
-    public ResponseEntity<AccountDTO> deposit(@PathVariable Long id, @RequestBody Map<String, Double> request){
+    public Account deposit(@PathVariable Long id, @RequestBody Map<String, Double> request){
         Double value = request.get("balance");
-        return new ResponseEntity<>(service.deposit(id,value), HttpStatus.ACCEPTED);
+        return service.deposit(id, value);
     }
     @PutMapping("{id}/withdraw")
     public ResponseEntity<AccountDTO> withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request){
