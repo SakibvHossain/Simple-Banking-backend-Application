@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("bank")
+@RequestMapping("account")
 @AllArgsConstructor
 @CacheConfig(cacheNames = "account")
 @Tag(
